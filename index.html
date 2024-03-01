@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TetRizs</title>
+</head>
+<style>
+    body { background-color: darkseagreen; }
+    #kozep {
+        text-align: center;
+    }
+    #jatek { width: 576px; font-size: 0px;}
+    #panel{ width: 144px;} 
+    #next { font-size: 0px;}
+    #kozep div { 
+        background-color: white;
+        display: inline-block;
+        height: 864px;
+        padding: 15px;
+        box-shadow: 0px 0px 20px black;
+        border-radius: 25px;
+        vertical-align: top;
+    }
+    #letol{
+        height: 500px;
+    }
+</style>
+<body onload="start()" onkeydown="mozgat();">
+
+    <div id="kozep">
+        <div id="jatek"></div>
+        <div id="panel">
+            <p>Pontszám</p>:
+            <span id="pont">0</span>
+            <p>Következő</p>:<br>
+            <span id="next">
+                <img id='0n0' src="img/next.png">
+                <img id='0n1' src="img/next.png">
+                <img id='0n2' src="img/next.png">
+                <img id='1n0' src="img/next.png">
+                <img id='1n1' src="img/next.png">
+                <img id='1n2' src="img/next.png">
+                <img id='2n0' src="img/next.png">
+                <img id='2n1' src="img/next.png">
+                <img id='2n2' src="img/next.png">
+            </span>
+            <p id="letol"> </p>
+            <input type="button" value="Újrakezd">
+           
+            
+        </div>  
+    </div>
+    
+</body>
+</html>
+
+<script>
+
+    // T L S Z J I
+    let elemek = [
+        ["---", "-Y-", "---", "---", "-C-", "-B-"],
+        ["PPP", "-Y-", "-GG", "RR-", "-C-", "-B-"],
+        ["-P-", "-YY", "GG-", "-RR", "CC-", "-B-"]
+    ];
+    let elem = [
+        ["","",""],
+        ["","",""],
+        ["","",""]
+    ]
+
+    let es = 1, eo = 5;
+
+    let next = 0;
+    let t = [];
+    function start(){
+        let html = "";
+        for(let s = 0; s<18;s++){
+            t[s] = [];
+            for(let o = 0; o<12;o++){
+                t[s][o] = "next";
+                html += "<img id='"+s+"x"+o+"' src='img/null.png'>"
+            }
+        }
+        document.getElementById('jatek').innerHTML = html;
+        kezd();
+    }
+
+   
+
+    function kezd(){
+       for(let s = 0; s<18;s++){
+            for(let o = 0; o<12;o++){
+                let kep = "null";
+                if(s == 0 || s == 17 || o == 0 || o == 11){ kep = "side"; }
+                setKep(s, o, kep);
+            }
+        }
+        setElem(Math.floor(Math.random()*6)); mutatElem();
+        next = Math.floor(Math.random()*6); nextElem(next); 
+    }
+
+    function nextElem(id){
+        for(let s=0;s<3;s++){
+            for(let o=0;o<3;o++){
+                let b = elemek[s][id].charAt(o);
+                let kep = "next"
+                if( b != "-" ) kep = "box"+b;
+                document.getElementById(s+"n"+o).src = "img/"+kep+".png";
+            }
+        }
+       
+    }
+
+    function setElem(id){
+        for(let s=0;s<3;s++){
+            for(let o=0;o<3;o++){
+                let b = elemek[s][id].charAt(o);
+                let kep = "null"
+                if( b != "-" ) kep = "box"+b;
+                elem[s][o] = kep;
+            }
+        }
+    }
+
+    function mutatElem(){
+        for(let s=0;s<3;s++){
+            for(let o=0;o<3;o++){
+                if(elem[s][o] != "null") setKep(es+s, eo+o, elem[s][o]);
+            }
+        }
+    }
+
+    function mozgat(){
+        let f = event.key;
+        torolElem();
+        if(f == 'a' && eo>1) eo--; 
+        if(f == 'd' && eo<8) eo++; 
+        //if(f == 'w') forgat();
+        //if(f == 's') esik();
+        mutatElem();
+    }
+
+    function torolElem(){
+        for(let s=0;s<3;s++){
+            for(let o=0;o<3;o++){
+                if(elem[s][o] != "null") setKep(es+s, eo+o, "null");
+            }
+        }
+    }
+
+    function setKep(s, o, kep){
+        t[s][o] = kep;
+        document.getElementById(s+"x"+o).src = "img/"+kep+".png";
+    }
+
+</script>
