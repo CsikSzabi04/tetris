@@ -108,7 +108,7 @@
             }
         }
 
-        function elferElem(ps, po){
+        function elferElem(ps, po, te=elem){
             let elfer = true;
             for(let s=0;s<3;s++){
                 for(let o=0;o<3;o++){
@@ -142,9 +142,12 @@
             for(let s=0; s<3; s++) for (let o=0; o<3; o++){
                 e[s][o] = elem[o][2-s];
             }
-            for(let s=0; s<3; s++) for (let o=0; o<3; o++){
+            if(elferElem(0, 0, e)){
+                for(let s=0; s<3; s++) for (let o=0; o<3; o++){
                 elem[s][o] = e[s][o];
             }
+            }
+
         }
 
         function setKep(s, o, kep){
