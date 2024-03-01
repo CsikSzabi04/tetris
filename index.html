@@ -6,33 +6,153 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TetRizs</title>
 </head>
-<style>
-    body { background-color: darkseagreen; }
-    #kozep {
-        text-align: center; 
-    }
-    #jatek { width: 576px; font-size: 0px; margin-right: 10px;}
-    #panel{ width: 144px;} 
-    #next { font-size: 0px;}
-    #kozep div { 
-        background-color: white;
-        display: inline-block;
-        height: 864px;
-        padding: 15px;
-        box-shadow: 0px 0px 20px black;
-        border-radius: 25px;
-        vertical-align: top;
-    }
-    #letol{
-        height: 470px;
-    }
-    #pont{
-        font-weight: bold; color: blue; font-size: 50px;
-    }
-    #butt{
-        width: 100px; height: 30px;
-    }
-</style>
+    <style>
+        body { background-color: darkseagreen; }
+        #kozep {  text-align: center;  }
+        #jatek { width: 576px; font-size: 0px; margin-right: 10px;}
+        #panel{ width: 144px;} 
+        #next { font-size: 0px;}
+        #kozep div {    background-color: white;   display: inline-block; height: 864px; padding: 15px;    box-shadow: 0px 0px 20px black; border-radius: 25px;vertical-align: top;}
+        #letol{  height: 470px; }
+        #pont{  font-weight: bold; color: blue; font-size: 50px; }
+        #butt{width: 100px; height: 30px;}
+    </style>
+    <script>
+        
+        let es = 1, eo = 5;
+        let next = 0;
+        let t = [];
+        let ti = null;
+        let pont = 0;
+
+        let elemek = [
+            ["---", "-Y-", "---", "---", "-C-", "-B-"],
+            ["PPP", "-Y-", "-GG", "RR-", "-C-", "-B-"],
+            ["-P-", "-YY", "GG-", "-RR", "CC-", "-B-"]
+        ];
+        let elem = [["","",""],["","",""],["","",""]]
+
+        function start(){
+            let html = "";
+            for(let s = 0; s<18;s++){
+                t[s] = [];
+                for(let o = 0; o<12;o++){
+                    t[s][o] = "next";
+                    html += "<img id='"+s+"x"+o+"' src='img/null.png'>"
+                }
+            }
+            document.getElementById('jatek').innerHTML = html;
+            kezd();
+        }
+
+        function kezd(){
+        for(let s = 0; s<18;s++){
+                for(let o = 0; o<12;o++){
+                    let kep = "null";
+                    if(s == 0 || s == 17 || o == 0 || o == 11){ kep = "side"; }
+                    setKep(s, o, kep);
+                }
+            }
+            setElem(Math.floor(Math.random()*6)); mutatElem();
+            next = Math.floor(Math.random()*6); nextElem(next); 
+            ti = setInterval(esik, 500);
+        }
+
+        function nextElem(id){
+            for(let s=0;s<3;s++){
+                for(let o=0;o<3;o++){
+                    let b = elemek[s][id].charAt(o);
+                    let kep = "next"
+                    if( b != "-" ) kep = "box"+b;
+                    document.getElementById(s+"n"+o).src = "img/"+kep+".png";
+                }
+            }
+        
+        }
+
+        function setElem(id){
+            for(let s=0;s<3;s++){
+                for(let o=0;o<3;o++){
+                    let b = elemek[s][id].charAt(o);
+                    let kep = "null"
+                    if( b != "-" ) kep = "box"+b;
+                    elem[s][o] = kep;
+                }
+            }
+        }
+
+        function mutatElem(){
+            for(let s=0;s<3;s++){
+                for(let o=0;o<3;o++){
+                    if(elem[s][o] != "null") setKep(es+s, eo+o, elem[s][o]);
+                }
+            }
+        }
+
+        function mozgat(){
+            if(ti == null) return;
+            let f = event.key;
+            torolElem();
+            if(f == "a" && elferElem(0, -1)) eo--; 
+            if(f == "d" && elferElem(0, +1)) eo++; 
+            if(f == 'w') forgat();
+            if(f == "s" && ti != null) esik();
+            mutatElem();
+        }
+
+        function torolElem(){
+            for(let s=0;s<3;s++){
+                for(let o=0;o<3;o++){
+                    if(elem[s][o] != "null") setKep(es+s, eo+o, "null");
+                }
+            }
+        }
+
+        function elferElem(ps, po){
+            let elfer = true;
+            for(let s=0;s<3;s++){
+                for(let o=0;o<3;o++){
+                    if(elem[s][o] != "null" && t[es+s+ps][eo+o+po] != "null") elfer = false;
+                }
+            }
+            return elfer;    
+        }
+
+        function esik(){
+            torolElem();
+            if(elferElem(+1, 0)){
+                es++; pont++; 
+                mutatElem(); 
+            }  else{
+                mutatElem();
+                pont += 3;
+                es = 1; eo = 5; setElem(next);
+                if(elferElem(0, 0)){
+                    mutatElem();
+                    next = Math.floor(Math.random()*6); nextElem(next);
+                } else{
+                    clearInterval(ti); ti = null;
+                }
+            }
+            document.getElementById("pont").innerHTML = pont;
+        }
+
+        function forgat(){
+            let e =  [["","",""],["","",""],["","",""]];
+            for(let s=0; s<3; s++) for (let o=0; o<3; o++){
+                e[s][o] = elem[o][2-s];
+            }
+            for(let s=0; s<3; s++) for (let o=0; o<3; o++){
+                elem[s][o] = e[s][o];
+            }
+        }
+
+        function setKep(s, o, kep){
+            t[s][o] = kep;
+            document.getElementById(s+"x"+o).src = "img/"+kep+".png";
+        }
+
+    </script>
 <body onload="start()" onkeydown="mozgat();">
 
     <div id="kozep">
@@ -54,130 +174,7 @@
             </span>
             <p id="letol"> </p>
             <input type="button" value="Újrakezd" id="butt">
-           
-            
         </div>  
     </div>
-    
 </body>
 </html>
-
-<script>
-
-    // T L S Z J I
-    let elemek = [
-        ["---", "-Y-", "---", "---", "-C-", "-B-"],
-        ["PPP", "-Y-", "-GG", "RR-", "-C-", "-B-"],
-        ["-P-", "-YY", "GG-", "-RR", "CC-", "-B-"]
-    ];
-    let elem = [
-        ["","",""],
-        ["","",""],
-        ["","",""]
-    ]
-
-    let es = 1, eo = 5;
-
-    let next = 0;
-    let t = [];
-    let ti = null;
-    function start(){
-        let html = "";
-        for(let s = 0; s<18;s++){
-            t[s] = [];
-            for(let o = 0; o<12;o++){
-                t[s][o] = "next";
-                html += "<img id='"+s+"x"+o+"' src='img/null.png'>"
-            }
-        }
-        document.getElementById('jatek').innerHTML = html;
-        kezd();
-    }
-
-   
-
-    function kezd(){
-       for(let s = 0; s<18;s++){
-            for(let o = 0; o<12;o++){
-                let kep = "null";
-                if(s == 0 || s == 17 || o == 0 || o == 11){ kep = "side"; }
-                setKep(s, o, kep);
-            }
-        }
-        setElem(Math.floor(Math.random()*6)); mutatElem();
-        next = Math.floor(Math.random()*6); nextElem(next); 
-        ti = setInterval(esik, 500);
-    }
-
-    function nextElem(id){
-        for(let s=0;s<3;s++){
-            for(let o=0;o<3;o++){
-                let b = elemek[s][id].charAt(o);
-                let kep = "next"
-                if( b != "-" ) kep = "box"+b;
-                document.getElementById(s+"n"+o).src = "img/"+kep+".png";
-            }
-        }
-       
-    }
-
-    function setElem(id){
-        for(let s=0;s<3;s++){
-            for(let o=0;o<3;o++){
-                let b = elemek[s][id].charAt(o);
-                let kep = "null"
-                if( b != "-" ) kep = "box"+b;
-                elem[s][o] = kep;
-            }
-        }
-    }
-
-    function mutatElem(){
-        for(let s=0;s<3;s++){
-            for(let o=0;o<3;o++){
-                if(elem[s][o] != "null") setKep(es+s, eo+o, elem[s][o]);
-            }
-        }
-    }
-
-    function mozgat(){
-        let f = event.key;
-        torolElem();
-        if(f == 'a' && elferElem(0, -1)) eo--; 
-        if(f == 'd' && elferElem(0, +1)) eo++; 
-        //if(f == 'w') forgat();
-        //if(f == 's') esik();
-        mutatElem();
-        if(k == "x") setInterval(esik, 250);
-    }
-
-    function torolElem(){
-        for(let s=0;s<3;s++){
-            for(let o=0;o<3;o++){
-                if(elem[s][o] != "null") setKep(es+s, eo+o, "null");
-            }
-        }
-    }
-
-    function elferElem(ps, po){
-        let elfer = true;
-        for(let s=0;s<3;s++){
-            for(let o=0;o<3;o++){
-                if(elem[s][o] != "null" && t[es+s+ps][eo+o+po] != "null") elfer = false;
-            }
-        }
-        return elfer;    
-    }
-
-    function esik(){
-        if(elferElem(+1, 0)){
-            torolElem(); es++; mutatElem;
-        }    
-    }
-
-    function setKep(s, o, kep){
-        t[s][o] = kep;
-        document.getElementById(s+"x"+o).src = "img/"+kep+".png";
-    }
-
-</script>
