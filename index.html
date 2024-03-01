@@ -9,9 +9,9 @@
 <style>
     body { background-color: darkseagreen; }
     #kozep {
-        text-align: center;
+        text-align: center; 
     }
-    #jatek { width: 576px; font-size: 0px;}
+    #jatek { width: 576px; font-size: 0px; margin-right: 10px;}
     #panel{ width: 144px;} 
     #next { font-size: 0px;}
     #kozep div { 
@@ -24,7 +24,13 @@
         vertical-align: top;
     }
     #letol{
-        height: 500px;
+        height: 470px;
+    }
+    #pont{
+        font-weight: bold; color: blue; font-size: 50px;
+    }
+    #butt{
+        width: 100px; height: 30px;
     }
 </style>
 <body onload="start()" onkeydown="mozgat();">
@@ -32,9 +38,9 @@
     <div id="kozep">
         <div id="jatek"></div>
         <div id="panel">
-            <p>Pontszám</p>:
+            <p>Pontszám</p>
             <span id="pont">0</span>
-            <p>Következő</p>:<br>
+            <p>Következő</p><br>
             <span id="next">
                 <img id='0n0' src="img/next.png">
                 <img id='0n1' src="img/next.png">
@@ -47,7 +53,7 @@
                 <img id='2n2' src="img/next.png">
             </span>
             <p id="letol"> </p>
-            <input type="button" value="Újrakezd">
+            <input type="button" value="Újrakezd" id="butt">
            
             
         </div>  
@@ -74,6 +80,7 @@
 
     let next = 0;
     let t = [];
+    let ti = null;
     function start(){
         let html = "";
         for(let s = 0; s<18;s++){
@@ -99,6 +106,7 @@
         }
         setElem(Math.floor(Math.random()*6)); mutatElem();
         next = Math.floor(Math.random()*6); nextElem(next); 
+        ti = setInterval(esik, 500);
     }
 
     function nextElem(id){
@@ -135,11 +143,12 @@
     function mozgat(){
         let f = event.key;
         torolElem();
-        if(f == 'a' && eo>1) eo--; 
-        if(f == 'd' && eo<8) eo++; 
+        if(f == 'a' && elferElem(0, -1)) eo--; 
+        if(f == 'd' && elferElem(0, +1)) eo++; 
         //if(f == 'w') forgat();
         //if(f == 's') esik();
         mutatElem();
+        if(k == "x") setInterval(esik, 250);
     }
 
     function torolElem(){
@@ -148,6 +157,22 @@
                 if(elem[s][o] != "null") setKep(es+s, eo+o, "null");
             }
         }
+    }
+
+    function elferElem(ps, po){
+        let elfer = true;
+        for(let s=0;s<3;s++){
+            for(let o=0;o<3;o++){
+                if(elem[s][o] != "null" && t[es+s+ps][eo+o+po] != "null") elfer = false;
+            }
+        }
+        return elfer;    
+    }
+
+    function esik(){
+        if(elferElem(+1, 0)){
+            torolElem(); es++; mutatElem;
+        }    
     }
 
     function setKep(s, o, kep){
